@@ -1,0 +1,23 @@
+FORM user_command USING r_ucomm TYPE sy-ucomm               "#EC CALLED
+                        rs_selfield TYPE slis_selfield.
+
+  DATA:wl_extracao LIKE LINE OF tg_extracao.
+
+  CASE r_ucomm.
+    WHEN c_ic1.
+      IF rs_selfield-fieldname = c_belnr.
+        READ TABLE tg_extracao INTO wl_extracao INDEX rs_selfield-tabindex.
+        IF sy-subrc = 0.
+          SET PARAMETER ID 'BLN' FIELD wl_extracao-belnr.
+
+          SET PARAMETER ID 'BUK' FIELD wl_extracao-bukrs.
+
+          SET PARAMETER ID 'GJR' FIELD wl_extracao-bsik_gjahr.
+
+* Calling Tcode FB03
+          CALL TRANSACTION 'FB03' AND SKIP FIRST SCREEN. " 'FB03'.
+        ENDIF.
+      ENDIF.
+  ENDCASE.
+
+ENDFORM. "user_command
